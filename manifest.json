@@ -1,0 +1,18 @@
+{
+  "name": "AI Stealth: Take Home Challenge",
+  "version": "1.0",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["*://web.telegram.org/a*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "permissions": [],
+  "host_permissions": ["*://web.telegram.org/a*"]
+}
