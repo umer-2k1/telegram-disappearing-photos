@@ -3,8 +3,7 @@ console.log("Expiring Photos Script v2 Loaded");
 (function () {
   const EXPIRY_TIME_SECONDS = 3;
   let trackedMessages = new Map();
-
-  // Inject script into page context to access Telegram's APIs
+ 
   function injectPageScript() {
     const script = document.createElement("script");
     script.textContent = `
@@ -75,8 +74,7 @@ console.log("Expiring Photos Script v2 Loaded");
     (document.head || document.documentElement).appendChild(script);
     script.remove();
   }
-
-  // Listen for messages from injected script
+ 
   window.addEventListener("message", (event) => {
     if (event.source !== window) return;
 
@@ -89,8 +87,7 @@ console.log("Expiring Photos Script v2 Loaded");
       trackedMessages.set(msgId, expireAt);
     }
   });
-
-  // Check for expired messages
+ 
   setInterval(() => {
     const now = Date.now();
 
@@ -104,6 +101,58 @@ console.log("Expiring Photos Script v2 Loaded");
   }, 1000);
 
   // Delete message by simulating user actions
+  // function deleteMessage(msgId) {
+  //   const messageElement = document.querySelector(
+  //     `[data-message-id="${msgId}"]`
+  //   );
+
+  //   if (!messageElement) {
+  //     console.warn(`Message ${msgId} not found in DOM`);
+  //     return;
+  //   }
+
+  //   try {
+  //     // Method 1: Try right-click context menu
+  //     messageElement.dispatchEvent(
+  //       new MouseEvent("contextmenu", {
+  //         bubbles: true,
+  //         cancelable: true,
+  //         view: window,
+  //         button: 2,
+  //       })
+  //     );
+
+  //     // Wait for context menu to appear
+  //     setTimeout(() => {
+  //       const deleteButton = Array.from(
+  //         document.querySelectorAll(".btn-menu-item, .menu-item")
+  //       ).find((el) => el.textContent.toLowerCase().includes("delete"));
+
+  //       if (deleteButton) {
+  //         deleteButton.click();
+  //         console.log(`Clicked delete for message ${msgId}`);
+
+  //         // Confirm deletion
+  //         setTimeout(() => {
+  //           const confirmButton = Array.from(
+  //             document.querySelectorAll("button, .btn")
+  //           ).find(
+  //             (el) =>
+  //               el.textContent.toLowerCase().includes("delete") ||
+  //               el.textContent.toLowerCase().includes("yes")
+  //           );
+  //           if (confirmButton) {
+  //             confirmButton.click();
+  //             console.log(`Confirmed deletion for message ${msgId}`);
+  //           }
+  //         }, 200);
+  //       }
+  //     }, 200);
+  //   } catch (error) {
+  //     console.error(`Error deleting message ${msgId}:`, error);
+  //   }
+  // }
+
   function deleteMessage(msgId) {
     const messageElement = document.querySelector(
       `[data-message-id="${msgId}"]`
@@ -114,8 +163,26 @@ console.log("Expiring Photos Script v2 Loaded");
       return;
     }
 
-    try {
-      // Method 1: Try right-click context menu
+    try {  
+      const media = messageElement.querySelector(
+        ".photo, .media-photo, img, video"
+      );
+      if (media) {
+        media.remove();
+      }
+
+      const placeholder = document.createElement("div");
+      placeholder.textContent =
+        "This message is not supported on the web version of Telegram";
+      placeholder.style.color = "var(--text-secondary, #888)";
+      placeholder.style.fontStyle = "italic";
+      placeholder.style.padding = "6px 0";
+      placeholder.style.fontSize = "14px";
+
+      messageElement.appendChild(placeholder);
+      console.log(`Inserted placeholder for message ${msgId}`);
+ 
+ 
       messageElement.dispatchEvent(
         new MouseEvent("contextmenu", {
           bubbles: true,
@@ -124,8 +191,7 @@ console.log("Expiring Photos Script v2 Loaded");
           button: 2,
         })
       );
-
-      // Wait for context menu to appear
+ 
       setTimeout(() => {
         const deleteButton = Array.from(
           document.querySelectorAll(".btn-menu-item, .menu-item")
@@ -134,8 +200,7 @@ console.log("Expiring Photos Script v2 Loaded");
         if (deleteButton) {
           deleteButton.click();
           console.log(`Clicked delete for message ${msgId}`);
-
-          // Confirm deletion
+ 
           setTimeout(() => {
             const confirmButton = Array.from(
               document.querySelectorAll("button, .btn")
@@ -155,8 +220,7 @@ console.log("Expiring Photos Script v2 Loaded");
       console.error(`Error deleting message ${msgId}:`, error);
     }
   }
-
-  // Initialize
+ 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", injectPageScript);
   } else {
