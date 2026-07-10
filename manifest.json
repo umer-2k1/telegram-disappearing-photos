@@ -1,18 +1,25 @@
 {
-  "name": "AI Stealth: Take Home Challenge",
-  "version": "1.0",
+  "name": "Telegram Disappearing Photos (Web A)",
+  "description": "Programmatically send self-destruct (disappearing) photos on web.telegram.org/a by instrumenting Telegram's MTProto worker.",
+  "version": "2.0",
   "manifest_version": 3,
-  "background": {
-    "service_worker": "background.js",
-    "type": "module"
-  },
   "content_scripts": [
     {
       "matches": ["*://web.telegram.org/a*"],
-      "js": ["content.js"],
-      "run_at": "document_idle"
+      "js": ["disappearing.js"],
+      "run_at": "document_start",
+      "world": "MAIN"
     }
   ],
-  "permissions": [],
-  "host_permissions": ["*://web.telegram.org/a*"]
+  "permissions": ["declarativeNetRequest"],
+  "declarative_net_rules": {
+    "rule_resources": [
+      {
+        "id": "csp",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
+  "host_permissions": ["*://web.telegram.org/*"]
 }
